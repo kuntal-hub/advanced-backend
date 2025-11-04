@@ -1,0 +1,49 @@
+# =========================
+# Node.js related ignores
+# =========================
+
+# Ignore all node_modules in any subdirectory
+**/node_modules/
+
+# Ignore all environment files
+**/.env
+**/.env.*   # e.g., .env.local, .env.development, .env.production
+
+# Ignore logs
+**/npm-debug.log*
+**/yarn-debug.log*
+**/yarn-error.log*
+**/pnpm-debug.log*
+
+# Ignore build and dist folders (common in frontend projects)
+**/dist/
+**/build/
+**/.next/
+**/out/
+**/.expo/
+**/.turbo/
+
+# Ignore temporary folders and cache
+**/.cache/
+**/.parcel-cache/
+**/.vite/
+**/.nuxt/
+**/.vercel/
+**/.eslintcache
+**/.DS_Store
+
+# Ignore lock files if not needed (optional)
+# Uncomment the following if you don’t want to commit lock files
+# **/package-lock.json
+# **/yarn.lock
+# **/pnpm-lock.yaml
+
+# Ignore IDE/editor specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Ignore misc system files
+Thumbs.db
+.DS_Store
