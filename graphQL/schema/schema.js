@@ -7,7 +7,30 @@ const users = [
     { id: 4, name: 'David', email: 'david@example.com', age: 40 }
 ];
 
+const addresses = [
+    { street: '123 Main St', city: 'New York', state: 'NY', zip: '10001', country: 'USA', userId: 1 },
+    { street: '456 Elm St', city: 'Los Angeles', state: 'CA', zip: '90001', country: 'USA', userId: 2 },
+    { street: '789 Oak St', city: 'Chicago', state: 'IL', zip: '60601', country: 'USA', userId: 3 },
+    { street: '101 Pine St', city: 'Houston', state: 'TX', zip: '77001', country: 'USA', userId: 4 },
+    { street: '202 Maple St', city: 'Phoenix', state: 'AZ', zip: '85001', country: 'USA', userId: 1 },
+    { street: '303 Cedar St', city: 'Philadelphia', state: 'PA', zip: '19101', country: 'USA', userId: 2 },
+    { street: '404 Birch St', city: 'San Antonio', state: 'TX', zip: '78201', country: 'USA', userId: 3 },
+    { street: '505 Walnut St', city: 'San Diego', state: 'CA', zip: '92101', country: 'USA', userId: 4 }
+];
+
 // we must make <object>Types by using GraphQLObjectType any external types (like mongoose schema models) do not work
+
+const userAddressType = new GraphQLObjectType({
+    name: 'userAddress',
+    fields: {
+        street: { type: GraphQLString },
+        city: { type: GraphQLString },
+        state: { type: GraphQLString },
+        zip: { type: GraphQLString },
+        country: { type: GraphQLString },
+        userId: { type: GraphQLInt }
+    }
+});
 
 const userType = new GraphQLObjectType({
     name: 'User',
@@ -15,16 +38,22 @@ const userType = new GraphQLObjectType({
         id: { type: GraphQLInt },
         name: { type: GraphQLString },
         email: { type: GraphQLString },
-        age: { type: GraphQLInt }
+        age: { type: GraphQLInt },
+        addresses: {
+            type: new GraphQLList(userAddressType),
+            resolve(parent, args) {
+                return addresses.filter(address => address.userId === parent.id);
+            }
+        }
     }
 });
 
 const userInputType = new GraphQLInputObjectType({
     name: 'userInput',
     fields: {
-        name:{type:new GraphQLNonNull(GraphQLString)},
-        email:{type:new GraphQLNonNull(GraphQLString)},
-        age:{type:GraphQLInt},
+        name: { type: new GraphQLNonNull(GraphQLString) },
+        email: { type: new GraphQLNonNull(GraphQLString) },
+        age: { type: GraphQLInt },
     }
 })
 
@@ -58,15 +87,15 @@ const rootQuery = new GraphQLObjectType({
 });
 
 const rootMutation = new GraphQLObjectType({
-    name:'userMutaion',
-    fields:{
+    name: 'userMutaion',
+    fields: {
         addUser: {
             type: userType,
             args: {
-                input:{type:userInputType}
+                input: { type: userInputType }
             },
-            resolve(parent,{input}) {
-                if(!input.age) {
+            resolve(parent, { input }) {
+                if (!input.age) {
                     throw new Error('provide age ')
                 }
 
@@ -90,15 +119,15 @@ const rootMutation = new GraphQLObjectType({
                 email: { type: GraphQLString },
                 age: { type: GraphQLInt }
             },
-            resolve(parent,args) {
-                    users[args.id -1] = {
+            resolve(parent, args) {
+                users[args.id - 1] = {
                     name: args.name,
                     email: args.email,
                     age: args.age,
                     id: args.id
                 }
 
-                return users[args.id -1];
+                return users[args.id - 1];
             }
         },
     }
