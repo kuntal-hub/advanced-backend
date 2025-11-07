@@ -18,6 +18,15 @@ const addresses = [
     { street: '505 Walnut St', city: 'San Diego', state: 'CA', zip: '92101', country: 'USA', userId: 4 }
 ];
 
+const categoryData = [
+    { id: 1, name: 'Electronics', description: 'Electronic devices and gadgets', parentCategoryId: null },
+    { id: 2, name: 'Computers', description: 'Desktops, laptops, and accessories', parentCategoryId: 1 },
+    { id: 3, name: 'Smartphones', description: 'Mobile phones and accessories', parentCategoryId: 1 },
+    { id: 4, name: 'Home Appliances', description: 'Appliances for home use', parentCategoryId: null },
+    { id: 5, name: 'Kitchen Appliances', description: 'Appliances for the kitchen', parentCategoryId: 4 },
+    { id: 6, name: 'Refrigerators', description: 'Cooling appliances for food storage', parentCategoryId: 5 },
+];
+
 // we must make <object>Types by using GraphQLObjectType any external types (like mongoose schema models) do not work
 
 const userAddressType = new GraphQLObjectType({
@@ -47,6 +56,27 @@ const userType = new GraphQLObjectType({
         }
     }
 });
+
+const categoryType = new GraphQLObjectType({
+    name: 'Category',
+    fields: () => ({
+        id: { type: GraphQLInt },
+        name: { type: GraphQLString },
+        description: { type: GraphQLString },
+        parentCategory: {
+            type: categoryType,
+            resolve(parent, args) {
+                return categoryData.find(category => category.id === parent.parentCategoryId);
+            }
+        },
+        subCategories: {
+            type: new GraphQLList(categoryType),
+            resolve(parent, args) {
+                return categoryData.filter(category => category.parentCategoryId === parent.id);
+            }
+        }
+    })
+}); 
 
 const userInputType = new GraphQLInputObjectType({
     name: 'userInput',
@@ -81,6 +111,19 @@ const rootQuery = new GraphQLObjectType({
             type: new GraphQLList(userType),
             resolve: function resolve(parent, args) {
                 return users;
+            }
+        },
+        category: {
+            type: categoryType,
+            args: { id: { type: GraphQLInt } },
+            resolve(parent, args) {
+                return categoryData.find(category => category.id === args.id);
+            }
+        },
+        categories: {
+            type: new GraphQLList(categoryType),
+            resolve(parent, args) {
+                return categoryData;
             }
         }
     }
@@ -130,6 +173,26 @@ const rootMutation = new GraphQLObjectType({
                 return users[args.id - 1];
             }
         },
+
+        addCategory: {
+            type: categoryType,
+            args: {
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                description: { type: GraphQLString },
+                parentCategoryId: { type: GraphQLInt }
+            },
+            resolve(parent, args) {
+                const newCategory = {
+                    id: categoryData.length + 1,
+                    name: args.name,
+                    description: args.description,
+                    parentCategoryId: args.parentCategoryId || null
+                };
+
+                categoryData.push(newCategory);
+                return newCategory;
+            }
+        }
     }
 })
 
