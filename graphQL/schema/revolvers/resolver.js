@@ -8,6 +8,9 @@ const users = [
 const userResolver = {
     Query : {
         getUser: (parent, args, context, info) => {
+            if (!context.isAuthorized) {
+                throw new Error("Unauthorized");
+            }; 
             return users.find(user => user.id === args.id);
         },
         getUsers: () => users
@@ -25,3 +28,5 @@ const userResolver = {
         }
     }
 }
+
+export {userResolver};
