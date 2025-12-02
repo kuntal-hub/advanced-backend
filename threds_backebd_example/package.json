@@ -15,15 +15,21 @@
   "dependencies": {
     "@apollo/server": "^5.2.0",
     "@as-integrations/express5": "^1.1.2",
+    "@prisma/adapter-pg": "^7.0.1",
+    "@prisma/client": "^7.0.1",
     "body-parser": "^2.2.1",
     "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
     "express": "^5.2.1",
-    "graphql": "^16.12.0"
+    "graphql": "^16.12.0",
+    "pg": "^8.16.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
     "@types/node": "^24.10.1",
+    "@types/pg": "^8.15.6",
+    "prisma": "^7.0.1",
     "tsc-watch": "^7.2.0",
     "typescript": "^5.9.3"
   }

@@ -40,5 +40,10 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-  }
+  },
+
+  // Only include source files under src so files like prisma.config.ts outside src are ignored
+  "include": [
+    "src/**/*"
+  ]
 }
