@@ -2,6 +2,7 @@ import express from 'express';
 import { expressMiddleware } from '@as-integrations/express5';
 import cors from 'cors';
 import { createGraphQlServer } from './graphql/index.js';
+import UserService from './services/user.js';
 
 async function startServer() {
     const app = express();
@@ -9,7 +10,19 @@ async function startServer() {
     app.use(express.json());
     app.use(cors());
 
-    app.use('/graphql', expressMiddleware(await createGraphQlServer()));
+    app.use('/graphql', expressMiddleware(await createGraphQlServer(), {
+        context: async ({ req, res }) => {
+            // @ts-ignore
+            const token = req.headers["token"];
+
+            try {
+                const user = UserService.decodeJWTToken(token as string);
+                return { user };
+            } catch (error) {
+                return {};
+            }
+        },
+    }));
 
     const PORT = process.env.PORT || 4000;
     app.listen(PORT, () => {
